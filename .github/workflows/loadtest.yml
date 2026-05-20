@@ -23,7 +23,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       # Run the load test
       - name: Azure Load Testing
-        uses: azure/load-testing@v1.1.28
+        uses: azure/load-testing@v1
         with:
           loadTestConfigFile: 'config.yaml'
           loadTestResource: ${{ env.LOAD_TEST_RESOURCE}}
