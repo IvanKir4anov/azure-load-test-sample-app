@@ -36,7 +36,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
                   name: loadTestResults
-                            path: ${{ github.workspace }}/loadTest
+                                      path: "${{ github.workspace }}/loadTest"
           name: loadTestResults
           path: ${{ github.workspace }}/loadTest
           # upload the published website code artifacts
