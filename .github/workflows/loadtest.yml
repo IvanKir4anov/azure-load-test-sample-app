@@ -2,6 +2,7 @@ name: Load test
 on: [workflow_dispatch]
 permissions:
   contents: read
+  id-token: write
 env:
   # For AZURE_WEBAPP_NAME enter just the name, not the full URL.
   RESOURCE_GROUP: az2006-rg
@@ -13,11 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      #Login in your azure subscription using client secret credentials
+      #Login in your azure subscription using OIDC
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       # Run the load test
       - name: Azure Load Testing
         uses: azure/load-testing@v1.1.27
@@ -28,11 +31,11 @@ jobs:
           env: |
             [{
               "name": "webapp",
-              "value": "${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+              "value": "${{ env.AZURE_WEBAPP_NAME }}"
             }]
-      # upload the published website code artifacts
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: loadTestResults
-          path: ${{github.workspace}}/loadTest
+          path: ${{ github.workspace }}/loadTest
+          # upload the published website code artifacts
+          if-no-files-found: warn
